@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+.cache/
+
+# Environments
+.venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VSCode junk (keep settings.json)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Data & artifacts
+data/**
+!data/.gitkeep
+runs/**
+!runs/.gitkeep
+submissions/**
+!submissions/.gitkeep
+tests/**
+!tests/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db

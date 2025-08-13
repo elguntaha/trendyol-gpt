@@ -1,0 +1,14 @@
+{
+    "python.terminal.activateEnvironment": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+        100
+    ],
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.ipynb_checkpoints": true
+    },
+    "jupyter.askForKernelRestart": false,
+    "jupyter.notebookFileRoot": "${workspaceFolder}"
+}
