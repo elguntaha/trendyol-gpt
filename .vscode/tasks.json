@@ -1,0 +1,76 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Context7 MCP Server",
+            "type": "shell",
+            "command": "npx",
+            "args": [
+                "-y",
+                "@upstash/context7-mcp@latest"
+            ],
+            "group": "test",
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Drift Service",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-m",
+                "uvicorn",
+                "main:app",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000",
+                "--reload"
+            ],
+            "group": "build",
+            "isBackground": true,
+            "options": {
+                "cwd": "${workspaceFolder}/ai-services/drift_service_folder"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            }
+        },
+        {
+            "label": "EDA: Open 00_eda.ipynb",
+            "type": "shell",
+            "command": "code",
+            "args": [
+                "notebooks/00_eda.ipynb"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Healthcheck: Print data sanity",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "src.healthcheck"
+            ],
+            "options": {
+                "env": {}
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build: Time-safe features",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "src.build_datasets"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

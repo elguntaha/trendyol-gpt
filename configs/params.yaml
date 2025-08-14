@@ -1,0 +1,95 @@
+# ===== Trendyol Datathon — Master Configuration =====
+# All times/windows are relative to ts_hour (no future lookups).
+
+seed: 42
+
+paths:
+  data_dir: data
+  submissions_dir: submissions
+  runs_dir: runs
+  artifacts_dir: runs/artifacts
+
+cv:
+  type: timeseries          # one of: timeseries, groupkfold, stratified (fallback)
+  n_splits: 5
+  purge_hours: 24           # gap between train/val to prevent leakage
+  shuffle: false
+  group_by: session_id      # keep session intact in a single fold
+
+features:
+  # Rolling windows (hours/days) used in aggregations; must be non-decreasing.
+  hours_windows: [1, 6, 24]
+  days_windows: [1, 7, 30]
+  min_support: 5            # ignore low-count groups when computing CTRs
+  rare_category_threshold: 20
+  target_encoding:
+    enabled: true
+    kfold: 5
+    smoothing_alpha: 10.0   # Bayesian smoothing for CTR-like rates
+    cols:
+      - level1_category_name
+      - level2_category_name
+      - leaf_category_name
+  text:
+    cv_tags_hashing_dim: 512
+    keep_top_terms: 50      # for term frequency features per product
+
+models:
+  click:
+    framework: lightgbm
+    params:
+      boosting_type: gbdt
+      n_estimators: 1500
+      learning_rate: 0.03
+      num_leaves: 63
+      max_depth: -1
+      subsample: 0.8
+      colsample_bytree: 0.8
+      min_child_samples: 50
+      reg_alpha: 0.0
+      reg_lambda: 0.1
+      objective: binary
+      n_jobs: -1
+      verbose: -1
+    early_stopping_rounds: 100
+    class_weight: null      # or "balanced"
+
+  order:
+    framework: lightgbm
+    params:
+      boosting_type: gbdt
+      n_estimators: 2500
+      learning_rate: 0.02
+      num_leaves: 63
+      max_depth: -1
+      subsample: 0.85
+      colsample_bytree: 0.85
+      min_child_samples: 40
+      reg_alpha: 0.0
+      reg_lambda: 0.2
+      objective: binary
+      n_jobs: -1
+      verbose: -1
+      # tip: for imbalance you may tune scale_pos_weight at train time
+    early_stopping_rounds: 150
+    class_weight: "balanced"
+    use_p_click_feature: true   # cascade: use OOF p_click as a feature
+
+calibration:
+  enabled: true
+  method: isotonic            # or "platt"
+  min_samples: 5000
+
+blending:
+  alpha: 0.7                  # final score = (1-alpha)*p_click + alpha*p_order
+  sweep: [0.6, 0.65, 0.7, 0.75, 0.8]
+
+inference:
+  batch_size: 200000
+  num_threads: -1
+  output_csv: submissions/submission.csv
+
+logging:
+  level: INFO
+  save_config_copy: true
+  run_name_prefix: baseline
